@@ -104,19 +104,18 @@
                 data.forEach(row => {
                     const tableRow = document.createElement("tr");
                     tableRow.innerHTML = `
-                        <td class='wide'>${row["Net Name"] || ''}</td>
-                        <td class='day'>${row["Monday"] === '✔' ? '✔' : ''}</td>
-                        <td class='day'>${row["Tuesday"] === '✔' ? '✔' : ''}</td>
-                        <td class='day'>${row["Wednesday"] === '✔' ? '✔' : ''}</td>
-                        <td class='day'>${row["Thursday"] === '✔' ? '✔' : ''}</td>
-                        <td class='day'>${row["Friday"] === '✔' ? '✔' : ''}</td>
-                        <td class='day'>${row["Saturday"] === '✔' ? '✔' : ''}</td>
-                        <td class='day'>${row["Sunday"] === '✔' ? '✔' : ''}</td>
-                        <td class='wide'>${row["UTC Time"] || ''}</td>
+                        <td class='wide'>${row["Net name"] || ''}</td>
+                        <td class='day'>${row["Mo"] === 'x' ? '✔' : ''}</td>
+                        <td class='day'>${row["Tu"] === 'x' ? '✔' : ''}</td>
+                        <td class='day'>${row["We"] === 'x' ? '✔' : ''}</td>
+                        <td class='day'>${row["Th"] === 'x' ? '✔' : ''}</td>
+                        <td class='day'>${row["Fr"] === 'x' ? '✔' : ''}</td>
+                        <td class='day'>${row["Sa"] === 'x' ? '✔' : ''}</td>
+                        <td class='day'>${row["Su"] === 'x' ? '✔' : ''}</td>
+                        <td class='wide'>${row["UTC"] || ''}</td>
                         <td class='wide'>${row["Mode"] || ''}</td>
                         <td class='wide'>${row["Node"] || ''}</td>
                         <td class='wide'>${row["Comment"] || ''}</td>
-                        <td class='wide'>${row["Instructions"] || ''}</td>
                     `;
                     tableBody.appendChild(tableRow); // Append the new row to the table body
                 });
@@ -180,7 +179,7 @@
         <div class="table-responsive">
             <table id="netTable" class="table table-bordered table-striped">
                 <thead>
-                    <tr><th class='wide'>Net Name</th><th class='day'>Monday</th><th class='day'>Tuesday</th><th class='day'>Wednesday</th><th class='day'>Thursday</th><th class='day'>Friday</th><th class='day'>Saturday</th><th class='day'>Sunday</th><th class='wide'>UTC Time</th><th class='wide'>Mode</th><th class='wide'>Node</th><th class='wide'>Comment</th><th class='wide'>Instructions</th></tr>
+                    <tr><th class='wide'>Net Name</th><th class='day'>Monday</th><th class='day'>Tuesday</th><th class='day'>Wednesday</th><th class='day'>Thursday</th><th class='day'>Friday</th><th class='day'>Saturday</th><th class='day'>Sunday</th><th class='wide'>UTC Time</th><th class='wide'>Mode</th><th class='wide'>Node</th><th class='wide'>Comment</th></tr>
                 </thead>
                 <tbody id="netTableBody">
                     <!-- Data will be populated here dynamically from CSV -->
