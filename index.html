@@ -77,11 +77,15 @@
             Papa.parse(csvUrl, {
                 download: true,
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
                     console.log("CSV data loaded successfully.", results);
                     try {
                         if (!results.data || results.errors.length > 0) {
                             console.error("Errors during CSV parsing:", results.errors);
+                            results.errors.forEach((error) => {
+                                console.error(`Row ${error.row}: ${error.message}`);
+                            });
                             throw new Error("Error parsing CSV file. Please check the file format and content.");
                         }
                         // Once the CSV is parsed, populate the table with the data
@@ -106,6 +110,11 @@
             // Iterate over each row of data and create table rows dynamically
             try {
                 data.forEach((row, index) => {
+                    // Skip rows with missing critical fields (e.g., Net name or UTC)
+                    if (!row["Net name"] || !row["UTC"]) {
+                        console.warn(`Skipping row ${index + 1} due to missing critical fields.`, row);
+                        return;
+                    }
                     console.log(`Processing row ${index + 1}:`, row);
                     const tableRow = document.createElement("tr");
                     tableRow.innerHTML = `
