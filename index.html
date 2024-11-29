@@ -72,7 +72,7 @@
 
         // Function to load CSV data from the provided URL using PapaParse
         function loadCSVData() {
-            const csvUrl = '/mnt/data/Net_List_Spreadsheet_Eastern_Time%20(1).xlsx%20-%20Sheet1.csv';
+            const csvUrl = 'https://raw.githubusercontent.com/sonyccd/d-star-net-list/refs/heads/main/d-star-net-schedule.csv';
             Papa.parse(csvUrl, {
                 download: true,
                 header: true,
