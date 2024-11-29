@@ -66,7 +66,6 @@
             // Format the time as HH:MM:SS UTC
             const formattedTime = `${utcHours.toString().padStart(2, '0')}:${utcMinutes.toString().padStart(2, '0')}:${utcSeconds.toString().padStart(2, '0')} UTC`;
             document.getElementById("utcClock").textContent = formattedTime;
-            console.log("Clock updated: " + formattedTime);
         }
         // Call updateClock every 1000ms (1 second)
         setInterval(updateClock, 1000);
