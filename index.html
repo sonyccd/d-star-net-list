@@ -66,42 +66,48 @@
             // Format the time as HH:MM:SS UTC
             const formattedTime = `${utcHours.toString().padStart(2, '0')}:${utcMinutes.toString().padStart(2, '0')}:${utcSeconds.toString().padStart(2, '0')} UTC`;
             document.getElementById("utcClock").textContent = formattedTime;
+            console.log("Clock updated: " + formattedTime);
         }
         // Call updateClock every 1000ms (1 second)
         setInterval(updateClock, 1000);
 
         // Function to load CSV data from the provided URL using PapaParse
         function loadCSVData() {
+            console.log("Loading CSV data from URL: https://raw.githubusercontent.com/sonyccd/d-star-net-list/refs/heads/main/d-star-net-schedule.csv");
             const csvUrl = 'https://raw.githubusercontent.com/sonyccd/d-star-net-list/refs/heads/main/d-star-net-schedule.csv';
             Papa.parse(csvUrl, {
                 download: true,
                 header: true,
                 complete: function(results) {
+                    console.log("CSV data loaded successfully.", results);
                     try {
                         if (!results.data || results.errors.length > 0) {
+                            console.error("Errors during CSV parsing:", results.errors);
                             throw new Error("Error parsing CSV file. Please check the file format and content.");
                         }
                         // Once the CSV is parsed, populate the table with the data
                         populateTable(results.data);
                     } catch (error) {
-                        console.error(error.message);
-                        alert("Failed to load CSV data. Please try again later.");
+                        console.error("Failed to load CSV data:", error);
+                        alert("Failed to load CSV data. Error: " + error.message + "\nPlease check the console for more details.");
                     }
                 },
                 error: function(error) {
-                    console.error("Error fetching CSV file:", error.message);
-                    alert("Failed to load CSV file. Please check the URL or file availability.");
+                    console.error("Error fetching CSV file:", error);
+                    alert("Failed to load CSV file. Error: " + error.message + "\nPlease check the console for more details.");
                 }
             });
         }
 
         // Function to populate the HTML table with the parsed CSV data
         function populateTable(data) {
+            console.log("Populating table with data.", data);
             const tableBody = document.getElementById("netTableBody");
             tableBody.innerHTML = ""; // Clear any existing rows
             // Iterate over each row of data and create table rows dynamically
             try {
-                data.forEach(row => {
+                data.forEach((row, index) => {
+                    console.log(`Processing row ${index + 1}:`, row);
                     const tableRow = document.createElement("tr");
                     tableRow.innerHTML = `
                         <td class='wide'>${row["Net name"] || ''}</td>
@@ -119,14 +125,16 @@
                     `;
                     tableBody.appendChild(tableRow); // Append the new row to the table body
                 });
+                console.log("Table populated successfully.");
             } catch (error) {
-                console.error("Error populating table:", error.message);
-                alert("An error occurred while populating the table. Please try again.");
+                console.error("Error populating table:", error);
+                alert("An error occurred while populating the table. Error: " + error.message + "\nPlease check the console for more details.");
             }
         }
 
         // Function to filter the table based on user input
         function filterTable() {
+            console.log("Filtering table...");
             const nameInput = document.getElementById("nameFilter").value.toUpperCase(); // Get the filter value for name
             const dayFilter = document.getElementById("dayFilter").value; // Get the selected day to filter by
             const table = document.getElementById("netTable");
@@ -145,10 +153,12 @@
 
                     // Show or hide the row based on the filter matches
                     rows[i].style.display = nameMatch && dayMatch ? "" : "none";
+                    console.log(`Row ${i}: nameMatch=${nameMatch}, dayMatch=${dayMatch}, display=${rows[i].style.display}`);
                 }
+                console.log("Table filtering completed.");
             } catch (error) {
-                console.error("Error filtering table:", error.message);
-                alert("An error occurred while filtering the table. Please try again.");
+                console.error("Error filtering table:", error);
+                alert("An error occurred while filtering the table. Error: " + error.message + "\nPlease check the console for more details.");
             }
         }
 
