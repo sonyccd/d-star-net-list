@@ -5,56 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D-Star Net Listings</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin: 20px auto;
-            max-width: 100%;
-        }
-        table {
-            width: 100%;
-            table-layout: fixed;
-            border-collapse: collapse;
-        }
-        th, td {
-            text-align: left;
-            padding: 8px;
-            border: 1px solid #ddd;
-            word-wrap: break-word;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        th.day, td.day {
-            width: 50px;
-            text-align: center;
-        }
-        th.wide, td.wide {
-            width: auto;
-        }
-        .clock {
-            text-align: right;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        .filter-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .filter-box select, .filter-box input {
-            flex: 1;
-        }
-        @media (max-width: 768px) {
-            th, td {
-                font-size: 0.9em;
-            }
-        }
-    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
         // Function to update the clock every second
@@ -66,6 +16,7 @@
             // Format the time as HH:MM:SS UTC
             const formattedTime = `${utcHours.toString().padStart(2, '0')}:${utcMinutes.toString().padStart(2, '0')}:${utcSeconds.toString().padStart(2, '0')} UTC`;
             document.getElementById("utcClock").textContent = formattedTime;
+            console.log("Clock updated: " + formattedTime);
         }
         // Call updateClock every 1000ms (1 second)
         setInterval(updateClock, 1000);
@@ -118,18 +69,18 @@
                     console.log(`Processing row ${index + 1}:`, row);
                     const tableRow = document.createElement("tr");
                     tableRow.innerHTML = `
-                        <td class='wide'>${row["Net name"] || ''}</td>
-                        <td class='day'>${row["Mo"] === 'x' ? '✔' : ''}</td>
-                        <td class='day'>${row["Tu"] === 'x' ? '✔' : ''}</td>
-                        <td class='day'>${row["We"] === 'x' ? '✔' : ''}</td>
-                        <td class='day'>${row["Th"] === 'x' ? '✔' : ''}</td>
-                        <td class='day'>${row["Fr"] === 'x' ? '✔' : ''}</td>
-                        <td class='day'>${row["Sa"] === 'x' ? '✔' : ''}</td>
-                        <td class='day'>${row["Su"] === 'x' ? '✔' : ''}</td>
-                        <td class='wide'>${row["UTC"] || ''}</td>
-                        <td class='wide'>${row["Mode"] || ''}</td>
-                        <td class='wide'>${row["Node"] || ''}</td>
-                        <td class='wide'>${row["Comment"] || ''}</td>
+                        <td>${row["Net name"] || ''}</td>
+                        <td class='text-center'>${row["Mo"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td class='text-center'>${row["Tu"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td class='text-center'>${row["We"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td class='text-center'>${row["Th"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td class='text-center'>${row["Fr"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td class='text-center'>${row["Sa"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td class='text-center'>${row["Su"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td>${row["UTC"] || ''}</td>
+                        <td>${row["Mode"] || ''}</td>
+                        <td>${row["Node"] || ''}</td>
+                        <td>${row["Comment"] || ''}</td>
                     `;
                     tableBody.appendChild(tableRow); // Append the new row to the table body
                 });
@@ -157,7 +108,7 @@
                     // Get the day index based on the selected day filter (if any)
                     const dayIndex = {"Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7}[dayFilter];
                     const dayCell = dayFilter && rows[i].getElementsByTagName("td")[dayIndex]; // Get the cell for the selected day
-                    const dayMatch = !dayFilter || (dayCell && dayCell.textContent === "✔"); // Check if day matches filter
+                    const dayMatch = !dayFilter || (dayCell && dayCell.innerHTML.includes('bi-check-lg')); // Check if day matches filter
 
                     // Show or hide the row based on the filter matches
                     rows[i].style.display = nameMatch && dayMatch ? "" : "none";
@@ -173,31 +124,51 @@
         // Load the CSV data when the document content is fully loaded
         document.addEventListener("DOMContentLoaded", loadCSVData);
     </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
 </head>
 <body onload="updateClock()">
     <div class="container mt-5">
-        <div class="clock">
-            Current Time: <span id="utcClock"></span>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">D-Star Net Listings (UTC)</h1>
+            <div class="clock">
+                <span id="utcClock" class="fw-bold"></span>
+            </div>
         </div>
-        <h1 class="mb-4">D-Star Net Listings (UTC)</h1>
         <h3 class="mb-4">Built from N5VLZ's great spreadsheet</h3>
-        <div class="filter-box">
-            <input type="text" id="nameFilter" onkeyup="filterTable()" class="form-control" placeholder="Filter by name...">
-            <select id="dayFilter" onchange="filterTable()" class="form-control">
-                <option value="">Filter by day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-            </select>
+        <div class="filter-box row g-3">
+            <div class="col-md-6">
+                <input type="text" id="nameFilter" onkeyup="filterTable()" class="form-control" placeholder="Filter by name...">
+            </div>
+            <div class="col-md-6">
+                <select id="dayFilter" onchange="filterTable()" class="form-select">
+                    <option value="">Filter by day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive mt-4">
             <table id="netTable" class="table table-bordered table-striped">
-                <thead>
-                    <tr><th class='wide'>Net Name</th><th class='day'>Monday</th><th class='day'>Tuesday</th><th class='day'>Wednesday</th><th class='day'>Thursday</th><th class='day'>Friday</th><th class='day'>Saturday</th><th class='day'>Sunday</th><th class='wide'>UTC Time</th><th class='wide'>Mode</th><th class='wide'>Node</th><th class='wide'>Comment</th></tr>
+                <thead class="table-light">
+                    <tr>
+                        <th>Net Name</th>
+                        <th class='text-center'>Monday</th>
+                        <th class='text-center'>Tuesday</th>
+                        <th class='text-center'>Wednesday</th>
+                        <th class='text-center'>Thursday</th>
+                        <th class='text-center'>Friday</th>
+                        <th class='text-center'>Saturday</th>
+                        <th class='text-center'>Sunday</th>
+                        <th>UTC Time</th>
+                        <th>Mode</th>
+                        <th>Node</th>
+                        <th>Comment</th>
+                    </tr>
                 </thead>
                 <tbody id="netTableBody">
                     <!-- Data will be populated here dynamically from CSV -->
