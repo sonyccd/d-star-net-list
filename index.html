@@ -77,8 +77,20 @@
                 download: true,
                 header: true,
                 complete: function(results) {
-                    // Once the CSV is parsed, populate the table with the data
-                    populateTable(results.data);
+                    try {
+                        if (!results.data || results.errors.length > 0) {
+                            throw new Error("Error parsing CSV file. Please check the file format and content.");
+                        }
+                        // Once the CSV is parsed, populate the table with the data
+                        populateTable(results.data);
+                    } catch (error) {
+                        console.error(error.message);
+                        alert("Failed to load CSV data. Please try again later.");
+                    }
+                },
+                error: function(error) {
+                    console.error("Error fetching CSV file:", error.message);
+                    alert("Failed to load CSV file. Please check the URL or file availability.");
                 }
             });
         }
@@ -88,25 +100,30 @@
             const tableBody = document.getElementById("netTableBody");
             tableBody.innerHTML = ""; // Clear any existing rows
             // Iterate over each row of data and create table rows dynamically
-            data.forEach(row => {
-                const tableRow = document.createElement("tr");
-                tableRow.innerHTML = `
-                    <td class='wide'>${row["Net Name"] || ''}</td>
-                    <td class='day'>${row["Monday"] === '✔' ? '✔' : ''}</td>
-                    <td class='day'>${row["Tuesday"] === '✔' ? '✔' : ''}</td>
-                    <td class='day'>${row["Wednesday"] === '✔' ? '✔' : ''}</td>
-                    <td class='day'>${row["Thursday"] === '✔' ? '✔' : ''}</td>
-                    <td class='day'>${row["Friday"] === '✔' ? '✔' : ''}</td>
-                    <td class='day'>${row["Saturday"] === '✔' ? '✔' : ''}</td>
-                    <td class='day'>${row["Sunday"] === '✔' ? '✔' : ''}</td>
-                    <td class='wide'>${row["UTC Time"] || ''}</td>
-                    <td class='wide'>${row["Mode"] || ''}</td>
-                    <td class='wide'>${row["Node"] || ''}</td>
-                    <td class='wide'>${row["Comment"] || ''}</td>
-                    <td class='wide'>${row["Instructions"] || ''}</td>
-                `;
-                tableBody.appendChild(tableRow); // Append the new row to the table body
-            });
+            try {
+                data.forEach(row => {
+                    const tableRow = document.createElement("tr");
+                    tableRow.innerHTML = `
+                        <td class='wide'>${row["Net Name"] || ''}</td>
+                        <td class='day'>${row["Monday"] === '✔' ? '✔' : ''}</td>
+                        <td class='day'>${row["Tuesday"] === '✔' ? '✔' : ''}</td>
+                        <td class='day'>${row["Wednesday"] === '✔' ? '✔' : ''}</td>
+                        <td class='day'>${row["Thursday"] === '✔' ? '✔' : ''}</td>
+                        <td class='day'>${row["Friday"] === '✔' ? '✔' : ''}</td>
+                        <td class='day'>${row["Saturday"] === '✔' ? '✔' : ''}</td>
+                        <td class='day'>${row["Sunday"] === '✔' ? '✔' : ''}</td>
+                        <td class='wide'>${row["UTC Time"] || ''}</td>
+                        <td class='wide'>${row["Mode"] || ''}</td>
+                        <td class='wide'>${row["Node"] || ''}</td>
+                        <td class='wide'>${row["Comment"] || ''}</td>
+                        <td class='wide'>${row["Instructions"] || ''}</td>
+                    `;
+                    tableBody.appendChild(tableRow); // Append the new row to the table body
+                });
+            } catch (error) {
+                console.error("Error populating table:", error.message);
+                alert("An error occurred while populating the table. Please try again.");
+            }
         }
 
         // Function to filter the table based on user input
@@ -117,17 +134,22 @@
             const rows = table.getElementsByTagName("tr");
 
             // Iterate over all rows, starting from index 1 to skip the header row
-            for (let i = 1; i < rows.length; i++) {
-                const nameCell = rows[i].getElementsByTagName("td")[0]; // Net Name column
-                const nameMatch = nameCell && nameCell.textContent.toUpperCase().includes(nameInput); // Check if name matches filter
+            try {
+                for (let i = 1; i < rows.length; i++) {
+                    const nameCell = rows[i].getElementsByTagName("td")[0]; // Net Name column
+                    const nameMatch = nameCell && nameCell.textContent.toUpperCase().includes(nameInput); // Check if name matches filter
 
-                // Get the day index based on the selected day filter (if any)
-                const dayIndex = {"Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7}[dayFilter];
-                const dayCell = dayFilter && rows[i].getElementsByTagName("td")[dayIndex]; // Get the cell for the selected day
-                const dayMatch = !dayFilter || (dayCell && dayCell.textContent === "✔"); // Check if day matches filter
+                    // Get the day index based on the selected day filter (if any)
+                    const dayIndex = {"Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7}[dayFilter];
+                    const dayCell = dayFilter && rows[i].getElementsByTagName("td")[dayIndex]; // Get the cell for the selected day
+                    const dayMatch = !dayFilter || (dayCell && dayCell.textContent === "✔"); // Check if day matches filter
 
-                // Show or hide the row based on the filter matches
-                rows[i].style.display = nameMatch && dayMatch ? "" : "none";
+                    // Show or hide the row based on the filter matches
+                    rows[i].style.display = nameMatch && dayMatch ? "" : "none";
+                }
+            } catch (error) {
+                console.error("Error filtering table:", error.message);
+                alert("An error occurred while filtering the table. Please try again.");
             }
         }
 
