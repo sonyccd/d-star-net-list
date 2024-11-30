@@ -45,7 +45,7 @@
             console.log("Populating table with data.", data);
             const tableBody = document.getElementById("netTableBody");
             tableBody.innerHTML = ""; // Clear any existing rows
-            // Iterate over each row of data and create table rows dynamically
+
             try {
                 data.forEach((row, index) => {
                     // Skip rows with missing critical fields (e.g., Net name or UTC)
@@ -55,15 +55,20 @@
                     }
                     console.log(`Processing row ${index + 1}:`, row);
                     const tableRow = document.createElement("tr");
+
+                    // Create a list of days when the net is active
+                    let daysList = [];
+                    if (row["Mo"] === 'x') daysList.push("Monday");
+                    if (row["Tu"] === 'x') daysList.push("Tuesday");
+                    if (row["We"] === 'x') daysList.push("Wednesday");
+                    if (row["Th"] === 'x') daysList.push("Thursday");
+                    if (row["Fr"] === 'x') daysList.push("Friday");
+                    if (row["Sa"] === 'x') daysList.push("Saturday");
+                    if (row["Su"] === 'x') daysList.push("Sunday");
+
                     tableRow.innerHTML = `
                         <td>${row["Net name"] || ''}</td>
-                        <td class='text-center'>${row["Mo"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
-                        <td class='text-center'>${row["Tu"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
-                        <td class='text-center'>${row["We"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
-                        <td class='text-center'>${row["Th"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
-                        <td class='text-center'>${row["Fr"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
-                        <td class='text-center'>${row["Sa"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
-                        <td class='text-center'>${row["Su"] === 'x' ? '<i class="bi bi-check-lg"></i>' : ''}</td>
+                        <td>${daysList.join(', ')}</td>
                         <td>${row["UTC"] || ''}</td>
                         <td>${row["Mode"] || ''}</td>
                         <td>${row["Node"] || ''}</td>
@@ -92,10 +97,9 @@
                     const nameCell = rows[i].getElementsByTagName("td")[0]; // Net Name column
                     const nameMatch = nameCell && nameCell.textContent.toUpperCase().includes(nameInput); // Check if name matches filter
 
-                    // Get the day index based on the selected day filter (if any)
-                    const dayIndex = {"Monday": 1, "Tuesday": 2, "Wednesday": 3, "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7}[dayFilter];
-                    const dayCell = dayFilter && rows[i].getElementsByTagName("td")[dayIndex]; // Get the cell for the selected day
-                    const dayMatch = !dayFilter || (dayCell && dayCell.innerHTML.includes('bi-check-lg')); // Check if day matches filter
+                    // Get the days cell and check if the selected day is in the list of active days
+                    const daysCell = rows[i].getElementsByTagName("td")[1];
+                    const dayMatch = !dayFilter || (daysCell && daysCell.textContent.includes(dayFilter)); // Check if day matches filter
 
                     // Show or hide the row based on the filter matches
                     rows[i].style.display = nameMatch && dayMatch ? "" : "none";
@@ -143,13 +147,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Net Name</th>
-                        <th class='text-center'>Monday</th>
-                        <th class='text-center'>Tuesday</th>
-                        <th class='text-center'>Wednesday</th>
-                        <th class='text-center'>Thursday</th>
-                        <th class='text-center'>Friday</th>
-                        <th class='text-center'>Saturday</th>
-                        <th class='text-center'>Sunday</th>
+                        <th>Days</th>
                         <th>UTC Time</th>
                         <th>Mode</th>
                         <th>Node</th>
