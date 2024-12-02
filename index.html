@@ -5,45 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D-Star Net Listings</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <script>
-
-        !function (t, e) { var o, n, p, r; e.__SV || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.crossOrigin = "anonymous", p.async = !0, p.src = s.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
+        // Initialize PostHog analytics
+        !function (t, e) {
+            var o, n, p, r;
+            e.__SV || (window.posthog = e, e._i = [], e.init = function (i, s, a) {
+                function g(t, e) {
+                    var o = e.split(".");
+                    2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () {
+                        t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+                    }
+                }
+                (p = t.createElement("script")).type = "text/javascript", p.crossOrigin = "anonymous", p.async = !0, p.src = s.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r);
+                var u = e;
+                for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) {
+                    var e = "posthog";
+                    return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e
+                }, u.people.toString = function () {
+                    return u.toString(1) + ".people (stub)"
+                }, o = "init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetGroupPropertiesForFlags resetPersonPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "), n = 0; n < o.length; n++)g(u, o[n]);
+                e._i.push([i, s, a])
+            }, e.__SV = 1)
+        }(document, window.posthog || []);
         posthog.init('phc_fobvEV3kiT9w9TZVXYzF9cCpASRdNNDwoUEZJ0F5qZ3', {
             api_host: 'https://us.i.posthog.com', person_profiles: 'always' // or 'always' to create profiles for anonymous users as well
-        })
+        });
 
-
-
-        let sortAscending = true; // Track the current sort direction
+        let sortAscending = true; // Track the current sort direction for UTC sorting
 
         // Function to update the clock every second
         function updateClock() {
             const now = new Date();
-            const utcHours = now.getUTCHours();
-            const utcMinutes = now.getUTCMinutes();
-            const utcSeconds = now.getUTCSeconds();
+            const utcHours = now.getUTCHours(); // Get current UTC hours
+            const utcMinutes = now.getUTCMinutes(); // Get current UTC minutes
+            const utcSeconds = now.getUTCSeconds(); // Get current UTC seconds
             // Format the time as HH:MM:SS UTC
             const formattedTime = `${utcHours.toString().padStart(2, '0')}:${utcMinutes.toString().padStart(2, '0')}:${utcSeconds.toString().padStart(2, '0')} UTC`;
-            document.getElementById("utcClock").textContent = formattedTime;
+            document.getElementById("utcClock").textContent = formattedTime; // Update the clock element
         }
-        // Call updateClock every 1000ms (1 second)
-        setInterval(updateClock, 1000);
+        setInterval(updateClock, 1000); // Update the clock every 1 second
 
-        // Function to load JSON data from the provided URL
+        // Function to load JSON data from a URL and populate the table
         function loadJSONData() {
             console.log("Loading JSON data from file");
-            const jsonUrl = 'https://raw.githubusercontent.com/sonyccd/d-star-net-list/refs/heads/main/d-star-net-schedule.json'; // Adjust the URL as needed
+            const jsonUrl = 'https://raw.githubusercontent.com/sonyccd/d-star-net-list/refs/heads/main/d-star-net-schedule.json';
             fetch(jsonUrl)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Network response was not ok");
                     }
-                    return response.json();
+                    return response.json(); // Parse JSON response
                 })
                 .then(data => {
                     console.log("JSON data loaded successfully.", data);
-                    populateTable(data);
+                    populateTable(data); // Populate table with the loaded data
                 })
                 .catch(error => {
                     console.error("Failed to load JSON data:", error);
@@ -51,7 +66,7 @@
                 });
         }
 
-        // Function to populate the HTML table with the parsed JSON data
+        // Function to populate the HTML table with parsed JSON data
         function populateTable(data) {
             console.log("Populating table with data.", data);
             const tableBody = document.getElementById("netTableBody");
@@ -64,7 +79,6 @@
                         console.warn(`Skipping row ${index + 1} due to missing critical fields.`, row);
                         return;
                     }
-                    console.log(`Processing row ${index + 1}:`, row);
                     const tableRow = document.createElement("tr");
 
                     // Create a list of days when the net is active
@@ -77,13 +91,14 @@
                     if (row["Sa"] === 'x') daysList.push("Saturday");
                     if (row["Su"] === 'x') daysList.push("Sunday");
 
+                    // Populate the row with relevant data
                     tableRow.innerHTML = `
-                        <td>${row["Net name"] || ''}</td>
-                        <td>${daysList.join(', ')}</td>
-                        <td>${row["UTC"] || ''}</td>
-                        <td>${row["Mode"] || ''}</td>
-                        <td>${row["Node"] || ''}</td>
-                        <td>${row["Comment"] || ''}</td>
+                        <td class="px-4 py-2">${row["Net name"] || ''}</td>
+                        <td class="px-4 py-2">${daysList.join(', ')}</td>
+                        <td class="px-4 py-2">${row["UTC"] || ''}</td>
+                        <td class="px-4 py-2">${row["Mode"] || ''}</td>
+                        <td class="px-4 py-2">${row["Node"] || ''}</td>
+                        <td class="px-4 py-2">${row["Comment"] || ''}</td>
                     `;
                     tableBody.appendChild(tableRow); // Append the new row to the table body
                 });
@@ -99,12 +114,11 @@
             console.log("Filtering table...");
             const nameInput = document.getElementById("nameFilter").value.toUpperCase(); // Get the filter value for name
             const dayFilter = document.getElementById("dayFilter").value; // Get the selected day to filter by
-            const table = document.getElementById("netTable");
-            const rows = table.getElementsByTagName("tr");
+            const tableBody = document.getElementById("netTableBody");
+            const rows = tableBody.getElementsByTagName("tr");
 
-            // Iterate over all rows, starting from index 1 to skip the header row
             try {
-                for (let i = 1; i < rows.length; i++) {
+                for (let i = 0; i < rows.length; i++) {
                     const nameCell = rows[i].getElementsByTagName("td")[0]; // Net Name column
                     const nameMatch = nameCell && nameCell.textContent.toUpperCase().includes(nameInput); // Check if name matches filter
 
@@ -125,8 +139,8 @@
         // Function to sort the table by the UTC Time column
         function sortTableByUTCTime() {
             console.log("Sorting table by UTC Time...");
-            const table = document.getElementById("netTable");
-            const rows = Array.from(table.rows).slice(1); // Get all rows except the header
+            const tableBody = document.getElementById("netTableBody");
+            const rows = Array.from(tableBody.getElementsByTagName("tr")); // Get all rows as an array
 
             // Sort rows based on the UTC Time column (index 2)
             rows.sort((a, b) => {
@@ -152,7 +166,6 @@
             });
 
             // Remove all existing rows
-            const tableBody = document.getElementById("netTableBody");
             tableBody.innerHTML = "";
 
             // Append the sorted rows to the table
@@ -175,64 +188,71 @@
         // Load the JSON data when the document content is fully loaded
         document.addEventListener("DOMContentLoaded", loadJSONData);
     </script>
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body onload="updateClock()">
-    <div class="container mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">D-Star Net Listings (UTC)</h1>
-            <div class="clock">
-                <span id="utcClock" class="fw-bold"></span>
+<body onload="updateClock()" class="bg-gray-100">
+    <div class="container mx-auto mt-5 p-4 bg-white rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">D-Star Net Listings (UTC)</h1>
+            <div class="text-lg font-semibold">
+                <span id="utcClock"></span>
             </div>
         </div>
-        <div class="d-flex justify-content-end mb-3">
+        <div class="flex justify-end mb-4">
             <a href="https://github.com/sonyccd/d-star-net-list/issues/new?assignees=sonyccd&labels=&projects=&template=add-net.md&title=%5BAdd+Net%5D"
-                class="btn btn-primary" target="_blank">
+                class="btn btn-primary bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                target="_blank">
                 Add a New Net
             </a>
         </div>
-        <div class="filter-box row g-3">
-            <div class="col-md-6">
-                <input type="text" id="nameFilter" onkeyup="filterTable()" class="form-control"
-                    placeholder="Filter by name...">
-            </div>
-            <div class="col-md-6">
-                <select id="dayFilter" onchange="filterTable()" class="form-select">
-                    <option value="">Filter by day</option>
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                    <option value="Saturday">Saturday</option>
-                    <option value="Sunday">Sunday</option>
-                </select>
-            </div>
+        <div class="flex flex-col md:flex-row gap-4 mb-4">
+            <input type="text" id="nameFilter" onkeyup="filterTable()"
+                class="form-input px-4 py-2 border rounded w-full md:w-1/2" placeholder="Filter by name...">
+            <select id="dayFilter" onchange="filterTable()"
+                class="form-select px-4 py-2 border rounded w-full md:w-1/2">
+                <option value="">Filter by day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
         </div>
-        <div class="table-responsive mt-4">
-            <table id="netTable" class="table table-bordered table-striped">
-                <thead class="table-light">
+        <div class="overflow-x-auto">
+            <table id="netTable" class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th>Net Name</th>
-                        <th>Days</th>
-                        <th id="utcHeader" onclick="sortTableByUTCTime()" style="cursor: pointer;">
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net
+                            Name</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days
+                        </th>
+                        <th id="utcHeader"
+                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            onclick="sortTableByUTCTime()">
                             UTC Time <i class="bi bi-arrow-down-up"></i>
                         </th>
-                        <th>Mode</th>
-                        <th>Node</th>
-                        <th>Comment</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mode
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Node
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Comment</th>
                     </tr>
                 </thead>
-                <tbody id="netTableBody">
+                <tbody id="netTableBody" class="bg-white divide-y divide-gray-200">
                     <!-- Data will be populated here dynamically from JSON -->
                 </tbody>
             </table>
         </div>
     </div>
+    <footer class="container mx-auto mt-5 text-center">
+        <p class="text-gray-600">Created by Brad Bazemore KK4PWJ. Source code can be found on <a
+                href="https://github.com/sonyccd/d-star-net-list" target="_blank"
+                class="text-blue-500 hover:underline">GitHub</a>.</p>
+    </footer>
 </body>
-<footer class="container mt-5 text-center">
-    <p>Created by Brad Bazemore KK4PWJ. Source code can be found on <a href="https://github.com/sonyccd/d-star-net-list" target="_blank">GitHub</a>.</p>
-</footer>
+
 </html>
