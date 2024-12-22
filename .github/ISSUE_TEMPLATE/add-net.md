@@ -10,9 +10,6 @@ assignees: sonyccd
 1. **Net Name:**
    - What is the name of your net?
 
-2. **Net Frequency/Band:**
-   - What frequency and band does your net use?
-
 3. **Repeater Callsign or Reflector:**
    - What is the callsign of the repeater or the reflector used for the net?
 
